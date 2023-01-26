@@ -1,0 +1,39 @@
+Redux Persist Important code
+****************************
+
+Put this code in store.js
+=========================
+import { persistReducer, persistStore } from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import thunk from "redux-thunk";
+
+const persistConfig = {
+  key: "root",
+  storage,
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+export const store = configureStore({
+  // reducer: rootReducer, // Without Redux Persist
+  reducer: persistedReducer, // With Redux Persist
+  devTools: process.env.NODE_ENV !== "production",
+
+  /**
+   When using Redux Persist without using the Thunk middleware, we‘d get an error in the browser’s 
+   console reading a non-serializable value was detected in the state.
+   */
+  middleware: [thunk],
+});
+
+export const persistor = persistStore(store);
+
+=============================================================================================================
+
+Put this code in index.js
+==========================
+ <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <App />
+    </PersistGate>
+  </Provider>
